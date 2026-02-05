@@ -28,7 +28,6 @@ client.once(Events.ClientReady, (readyClient) => {
 
 client.login(process.env.TOKEN);
 
-
 const executeCommand = interaction => {
     interaction.isChatInputCommand() && client.commands.get(interaction.commandName)?.execute(interaction);
 };

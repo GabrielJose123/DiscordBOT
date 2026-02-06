@@ -7,7 +7,6 @@ dotenv.config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-//commands imports
 const fs = require('node:fs');
 const path = require('node:path');
 const { execute } = require('./commands/git');

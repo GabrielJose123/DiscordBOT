@@ -1,18 +1,10 @@
-const express = require('express');
-const db = require('../db/connect/connectDB').db;
+const Crud = require('./utils/crudFunctions');
 
-const entity = db.getRepository('Crendentials')
+const sshRoutes = new Crud({entity: 'Crendentials'});
 
-const router = express.Router();
+sshRoutes.get('/');
+sshRoutes.getById('/:id');
+sshRoutes.delete('/:id');
+sshRoutes.post('/');
 
-router.get('/:id', async (req,res) => {
-
-});
-
-router.post('/', async (req,res) => {
-    
-    const saved = await entity.save(entity.create(req.body));
-    return res.status(201).json(saved);
-});
-
-module.exports = router;
+module.exports = sshRoutes.router;

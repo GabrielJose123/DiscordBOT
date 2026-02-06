@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+// somente para testes
+/*const { SlashCommandBuilder } = require('@discordjs/builders');
 const ConnectSSH = require('../api/ssh/connectSSH');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -26,4 +27,4 @@ module.exports = {
 
     await interaction.editReply(`\`\`\`\n${result}\n\`\`\``);
     }
-};
+}; */

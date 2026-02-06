@@ -1,5 +1,4 @@
-// somente para testes
-/*const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const ConnectSSH = require('../api/ssh/connectSSH');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -7,18 +6,20 @@ dotenv.config();
 const ssh = new SlashCommandBuilder()
     .setName('ssh')
     .setDescription('COMANDOS PARA SERVIDORES SSH')
-    .addSubcommand((sub) => {
-        
-    })
-
+/*   .addSubcommand(sub => 
+        sub
+            .setName
+        sub.setName('cadastrar')
+    )
+*/
 module.exports = {
     data: ssh,
     async execute(interaction) {
         await interaction.deferReply();
         const server = new ConnectSSH({
-            host: '10.10.1.192',
-            username: 'kali',
-            auth: process.env.SSH_PASSWORD
+            host: '10.10.1.187',
+            username: 'root',
+            auth: 'Kr14t1v4!'
         });
 
     await server.connect();
@@ -27,4 +28,4 @@ module.exports = {
 
     await interaction.editReply(`\`\`\`\n${result}\n\`\`\``);
     }
-}; */
+}; 

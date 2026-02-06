@@ -12,9 +12,9 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
         const server = new ConnectSSH({
-            host: '10.10.1.192',
-            username: 'kali',
-            auth: process.env.SSH_PASSWORD
+            host: `${process.env.SSH_IP}`,
+            username: `${process.env.SSH_USERNAME}`,
+            auth: `${process.env.SSH_PASSWORD}`
         });
 
     await server.connect();

@@ -6,11 +6,13 @@ dotenv.config();
 const ssh = new SlashCommandBuilder()
     .setName('ssh')
     .setDescription('COMANDOS PARA SERVIDORES SSH')
-   /*.addSubcommand(sub => 
+    .addSubcommand(sub => 
         sub
         .setName('cadastrar')
-        .options
-    ); */
+        .options('host')
+        .options('username')
+        .auth('auth')
+    ); 
 
 
 module.exports = {
@@ -18,6 +20,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
+        axios.post
         
         const server = new ConnectSSH({
             host: '10.10.1.187',

@@ -2,7 +2,7 @@ const typeorm = require('typeorm');
 const dotenv = require('dotenv');
 const HourLog = require('../../../utils/HourLog');
 
-dotenv.config();
+dotenv.config({ silent: true });
 
 const db = new typeorm.DataSource({
     type: "postgres",

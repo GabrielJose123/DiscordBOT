@@ -8,13 +8,17 @@ class CreateRoutes {
         this.router = express.Router();
         this.entity = entity;
         this.dataBase = db.getRepository(this.entity)
-    };
 
+        return this;
+    };
+    
     get(url) {
         this.router.get(url, async (req,res) => {
             const data = await this.dataBase.find();
             res.json(data);
         });
+
+        return this;
     };
 
     getById(url) {
@@ -23,6 +27,8 @@ class CreateRoutes {
             const data = await this.dataBase.findOneBy({[param]: req.params.param });
             res.json(data);
         });
+
+        return this;
     };
 
     post(url) {
@@ -31,6 +37,8 @@ class CreateRoutes {
             const saveData = await this.dataBase.save(data);
             return res.send(saveData);
         });
+
+        return this;
     };
 
     delete(url) {
@@ -39,6 +47,8 @@ class CreateRoutes {
             const op = await this.dataBase.delete({ [param]: req.params.param });
             res.send(op)
         });
+
+        return this;
     };
 
     put(url) {
@@ -47,6 +57,8 @@ class CreateRoutes {
             const data = await this.dataBase.findOneBy({ [param]: req.params.param });
             const saveMerge = this.dataBase.save(this.dataBase.merge(data, req.body))
         });
+
+        return this;
     };
 };
 

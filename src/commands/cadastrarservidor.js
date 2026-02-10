@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const ConnectSSH = require('../api/ssh/connectSSH');
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({ silent: true });
 
 const cadastrarservidor = new SlashCommandBuilder()
     .setName('cadastrarservidor')

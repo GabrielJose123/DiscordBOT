@@ -1,8 +1,8 @@
-const { default: axios } = require("axios");
+const axios  = require("axios");
 const HourLog = require("./HourLog");
 
 class FetchOp {
-    constructor (url) {
+    constructor ({url}) {
         this.url = url;
     };
 
@@ -13,13 +13,21 @@ class FetchOp {
                 url: this.url,
                 responseType: 'text'
             })
-            .then(res => HourLog(`GET URL ${this.url} HAS BEEN SUCESSFUL: ${res}`) )
-            .catch(err => HourLog(`GET URL ${this.url} has been failed because ${err}`) )
+            .then(res => HourLog(`GET URL ${this.url} HAS BEEN SUCESSFUL: ${res.status} | ${res.data}`))
+            .catch(err => HourLog(`GET URL ${this.url} has been failed because ${err.message} | ${err.response?.status || "NO_STATUS"} | ${err.response?.data || "NO_RESPONSE_DATA"}`))
         )
     };
 
     getById() {
-        
+        return (
+            axios({
+                method: 'get',
+                url: this.url,
+                responseType: 'text' 
+            })
+            .then(res => HourLog(`GET URL ${this.url} HAS BEEN SUCESSFUL: ${res.status} | ${res.data}`))
+            .catch(err => HourLog(`GET URL ${this.url} has been failed because ${err.message} | ${err.response?.status || "NO_STATUS"} | ${err.response?.data || "NO_RESPONSE_DATA"}`))
+        )
     }
 
     post(dataPost) {
@@ -39,12 +47,14 @@ class FetchOp {
                 url: this.url,
                 responseType: 'text'
             })
-            .then(res => HourLog(`DELETE URL ${this.url}`))
-            .catch(err => HourLog(`DELETE URL ${this.url} has been failed because ${err}`))
+            .then(res => HourLog(`DELETE URL ${this.url} HAS BEEN SUCESSFUL: ${res.status}`))
+            .catch(err => HourLog(`DELETE URL ${this.url} has been failed because ${err.message} | ${err.response?.status || "NO_STATUS"} | ${err.response?.data || "NO_RESPONSE_DATA"}`))
         )
     }
 
     put() {
 
-    }
-}
+    };
+};
+
+module.exports = FetchOp

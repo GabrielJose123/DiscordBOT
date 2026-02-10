@@ -2,7 +2,7 @@ const CreateRoutes = require('./utils/creatRoutesClass');
 
 const sshRoutes = new CreateRoutes({entity: 'Crendentials'});
 
-sshRoutes
+    sshRoutes
     .get('/')
     .getById('/:id')
     .delete('/:id')

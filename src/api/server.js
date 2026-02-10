@@ -7,13 +7,13 @@ app.use(cors());
 app.use(express.json());
 
 const dotenv = require('dotenv');
-dotenv.config()
+dotenv.config({ debug: false });
 const port = process.env.PORT;
 
 const db = require('./db/connect/connectDB');
 db.connect();
 
-const sshRoute = require('./routes/sshRouters');
+const sshRoute = require('./routes/sshRoutes');
 const HourLog = require('../utils/HourLog');
 app.use('/servers', sshRoute);
 

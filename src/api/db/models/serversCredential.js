@@ -11,14 +11,23 @@ module.exports = new typeorm.EntitySchema({
             type: 'int',
             generated: true
         },
+
+        serverName: {
+            type: 'varchar',
+            length:255,
+            required: true
+        },
+
         username: {
             type: 'varchar',
             length: 255
         },
+
         ip: {
             type: 'varchar',
             length:255
         },
+        
         auth: {
             type: 'varchar',
             length:255

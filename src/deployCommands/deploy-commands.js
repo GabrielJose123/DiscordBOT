@@ -5,7 +5,7 @@ const { Client, GatewayIntentBits, Events } = require("discord.js");
 const fs = require('node:fs');
 const path = require('node:path');
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({ silent: true });
 
 const commandsPath = path.join(__dirname, '../commands');
 const commandsFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -27,7 +27,5 @@ const saveComma = async () => {
 };
 
 saveComma()
-
-
 
 module.exports = { commandsRead, saveComma };

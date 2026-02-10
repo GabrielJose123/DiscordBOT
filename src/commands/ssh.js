@@ -6,11 +6,11 @@ dotenv.config();
 const ssh = new SlashCommandBuilder()
     .setName('ssh')
     .setDescription('COMANDOS PARA SERVIDORES SSH')
-   .addSubcommand(sub => 
+   /*.addSubcommand(sub => 
         sub
         .setName('cadastrar')
         .options
-    );
+    ); */
 
 
 module.exports = {

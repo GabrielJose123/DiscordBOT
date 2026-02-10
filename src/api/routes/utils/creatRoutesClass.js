@@ -5,7 +5,7 @@ const db = require('../../db/connect/connectDB').db;
 
 class CreateRoutes {   
     constructor({ entity }) {
-        this.router = express.Router();;
+        this.router = express.Router();
         this.entity = entity;
         this.dataBase = db.getRepository(this.entity)
     };

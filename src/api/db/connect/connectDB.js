@@ -1,5 +1,6 @@
 const typeorm = require('typeorm');
 const dotenv = require('dotenv');
+const HourLog = require('../../../utils/HourLog');
 
 dotenv.config();
 
@@ -18,8 +19,8 @@ const db = new typeorm.DataSource({
 
 const connect = async () => {
     await db.initialize()
-    .then(() => console.log('DB CONNECT: OK'))
-    .catch((err) => console.log(`DB CONNECT FAILED: ${err}`));
+    .then(() => HourLog('DB CONNECT: OK'))
+    .catch((err) => HourLog(`DB CONNECT FAILED: ${err}`));
 }
 
 module.exports = {db, connect};

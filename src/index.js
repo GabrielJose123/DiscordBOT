@@ -10,6 +10,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const fs = require('node:fs');
 const path = require('node:path');
 const { execute } = require('./commands/git');
+const HourLog = require('./utils/HourLog');
 
 const commandsPath = path.join(__dirname, 'commands');
 const commandsFiles = fs.readdirSync(commandsPath).filter(item => item.endsWith('.js'));
@@ -22,7 +23,7 @@ commandsFiles.map((item) => {
 });
 
 client.once(Events.ClientReady, (readyClient) => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	HourLog(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.login(process.env.TOKEN);

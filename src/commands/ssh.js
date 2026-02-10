@@ -6,16 +6,19 @@ dotenv.config();
 const ssh = new SlashCommandBuilder()
     .setName('ssh')
     .setDescription('COMANDOS PARA SERVIDORES SSH')
-/*   .addSubcommand(sub => 
+   .addSubcommand(sub => 
         sub
-            .setName
-        sub.setName('cadastrar')
-    )
-*/
+        .setName('cadastrar')
+        .options
+    );
+
+
 module.exports = {
     data: ssh,
     async execute(interaction) {
         await interaction.deferReply();
+
+        
         const server = new ConnectSSH({
             host: '10.10.1.187',
             username: 'root',

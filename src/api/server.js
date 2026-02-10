@@ -14,8 +14,9 @@ const db = require('./db/connect/connectDB');
 db.connect();
 
 const sshRoute = require('./routes/sshRouters');
+const HourLog = require('../utils/HourLog');
 app.use('/servers', sshRoute);
 
-app.listen(port, () => {console.log(`SERVER RUNNING IN http://localhost:${port}`)});
+app.listen(port, () => {HourLog(`SERVER RUNNING IN http://localhost:${port}`)});
 
 

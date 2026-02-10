@@ -3,7 +3,7 @@ const express = require('express');
 //importe a conexao do banco
 const db = require('../../db/connect/connectDB').db;
 
-class Crud {   
+class CreateRoutes {   
     constructor({ entity }) {
         this.router = express.Router();;
         this.entity = entity;
@@ -50,4 +50,4 @@ class Crud {
     };
 };
 
-module.exports = Crud;
+module.exports = CreateRoutes;

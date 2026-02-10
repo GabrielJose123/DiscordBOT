@@ -1,11 +1,11 @@
-const Crud = require('./utils/crudFunctions');
+const CreateRoutes = require('./utils/creatRoutesClass');
 
-const sshRoutes = new Crud({entity: 'Crendentials'});
+const sshRoutes = new CreateRoutes({entity: 'Crendentials'});
 
 sshRoutes
-    .get('/');
-    .getById('/:id');
-    .delete('/:id');
-    .post('/');
+    .get('/')
+    .getById('/:id')
+    .delete('/:id')
+    .post('/')
 
 module.exports = sshRoutes.router;

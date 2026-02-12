@@ -1,19 +1,20 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const ConnectSSH = require('../api/ssh/connectSSH');
+const ConnectSSH = require('../ssh/connectSSH');
 const dotenv = require('dotenv');
 const FetchOp = require('../utils/FetchOp');
+const HourLog = require('../utils/HourLog');
 dotenv.config({ silent: true });
 
 const ssh = new SlashCommandBuilder()
     .setName('ssh')
     .setDescription('COMANDOS PARA SERVIDORES SSH')
-    .addSubcommand((subcommand) =>
+    .addSubcommand(subcommand =>
         subcommand
             .setName('cadastrar')
             .setDescription('EFETUA O CADASTRO DE SERVIDORES SSH')
                 .addStringOption(option =>
                     option
-                        .setName('serverName')
+                        .setName('servername')
                         .setDescription('Nome do servidor que sera referenciado pelo bot')
                         .setRequired(true)
                 )
@@ -38,7 +39,77 @@ const ssh = new SlashCommandBuilder()
                         .setDescription('Senha ou caminho da chave (somente testes)')
                         .setRequired(true)
                     )
-    );
+    )
+
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('listarservers')
+            .setDescription('Lista servidores cadastrados')
+    )
+    .addSubcommand(subcommand => 
+        subcommand
+            .setName('conectar')
+            .setDescription('conectar em um dos servidores cadastrados')
+                .addStringOption(option =>
+                    option
+                        .setName('servers')
+                        .setDescription("Digite um dos servidores cadastrados que deseja se conectar")
+                        .setRequired(true)
+                )
+    )
+
+
+const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
+
+const saveServe = async (interaction) => {
+    const serverObj = {
+        serverName: interaction.options.getString('servername'),
+        ip: interaction.options.getString('host'),
+        username: interaction.options.getString('user'),
+        auth: interaction.options.getString('auth')
+    };
+
+    try {
+        await ApiOp.post(serverObj);
+        HourLog(`THE SERVER ${serverObj.serverName} HAS BEEN SAVED successful`);
+        
+    }catch (err){HourLog(`THE SERVER ${serverObj.serverName} DON´T CAN SAVED BECAUSE: ${err}`)}
+};
+
+const getServer = async (interaction) => {
+    const serverNames = [];
+    const data = await ApiOp.get();
+
+    Object.entries(data).map(([idx,item]) => {
+        serverNames.push(item.serverName); 
+    });
+
+    interaction.editReply(`${serverNames}`)
+};
+
+const connectSrv = async (interaction) => {
+    const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
+    const serverData = await ApiOp.get();
+
+    const servertarget = Object.values(serverData).filter(item => {
+        return item.serverName == `${interaction.options.getSubcommand()}`;
+    });
+
+    const serverObj = {
+        username: servertarget.username,
+        host: servertarget.ip,
+        auth: servertarget.auth
+    };
+
+    HourLog(`TRYING CONNECT INTO SERVER ${servertarget.username}`);
+
+    const conn = new ConnectSSH(serverObj)
+
+    try {
+        await conn.connect()
+        HourLog(`CONNECT INTO SERVER SUCCESFUL`)
+    }catch(err){ HourLog(`CONNECT HAS BEEN FAILED BECAUSE: ${err}`)}
+}
 
 module.exports = {
     data: ssh,
@@ -46,24 +117,15 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
-        const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
-
-        const host = interaction.options.getString('host');
-        const user = interaction.options.getString('user');
-        const auth = interaction.options.getString('auth');
-
-        const serverObj = {
-            ip:  host,
-            username: user,
-            auth: auth
+        const subcommands = {
+            cadastrar: () => saveServe(interaction),
+            listarservers: () => getServer(interaction),
+            conectar: () => connectSrv(interaction)
         };
 
-        await ApiOp.post(serverObj);
-        
-    // const server = new ConnectSSH({ serverObj });
-    //await server.connect();
+        const subCommInput = interaction.options.getSubcommand()
 
-    await interaction.editReply(`feito cadastro do servidor com ip ${serverObj.host}`);
+        subCommInput in subcommands ? await subcommands[subCommInput]() : interaction.editReply('COMANDO igitado nao existe');
 
     },
 };

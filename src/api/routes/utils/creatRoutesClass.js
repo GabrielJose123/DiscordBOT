@@ -22,9 +22,9 @@ class CreateRoutes {
     };
 
     getById(url) {
-        const param = url.replace(/[\/:]/g, "");
+        const id = url.replace(/[\/:]/g, "");
         this.router.get(url, async (req,res) => {
-            const data = await this.dataBase.findOneBy({[param]: req.params.param });
+            const data = await this.dataBase.findOneBy({id: req.params.id});
             res.json(data);
         });
 

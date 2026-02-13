@@ -69,7 +69,6 @@ const saveServe = async (interaction) => {
         username: interaction.options.getString('user'),
         auth: interaction.options.getString('auth')
     };
-
     try {
         await ApiOp.post(serverObj);
         HourLog(`THE SERVER ${serverObj.serverName} HAS BEEN SAVED successful`);
@@ -86,7 +85,6 @@ const getServer = async (interaction) => {
     });
 
     botWrite(interaction, `${serverNames}`)
-    
 };
 
 const connectSrv = async (interaction) => {
@@ -103,7 +101,7 @@ const connectSrv = async (interaction) => {
         auth: servertarget.auth
     };
 
-    HourLog(`TRYING CONNECT INTO SERVER ${servertarget.username}`);
+    HourLog(`TRYING CONNECT INTO SERVER ${serverObj.username}`);
 
     const conn = new ConnectSSH(serverObj)
     try {
@@ -114,7 +112,6 @@ const connectSrv = async (interaction) => {
 
     return conn
 };
-
 
 let sshConn;
 
@@ -134,7 +131,7 @@ module.exports = {
             cadastrar: () => saveServe(interaction),
             listarservers: () => getServer(interaction),
             conectar: () => connectSrv(interaction),
-            verificarespaco: verSpace(connectSrv(interaction),interaction)
+            verificarespaco: () => verSpace(connectSrv(interaction),interaction)
         };
 
         const subCommInput = interaction.options.getSubcommand();

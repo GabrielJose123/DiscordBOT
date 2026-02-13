@@ -3,6 +3,8 @@ const ConnectSSH = require('../ssh/connectSSH');
 const dotenv = require('dotenv');
 const FetchOp = require('../utils/FetchOp');
 const HourLog = require('../utils/HourLog');
+const { text } = require('express');
+const botWrite = require('../utils/BotWrite');
 dotenv.config({ silent: true });
 
 const ssh = new SlashCommandBuilder()
@@ -58,7 +60,6 @@ const ssh = new SlashCommandBuilder()
                 )
     )
 
-
 const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
 
 const saveServe = async (interaction) => {
@@ -84,7 +85,8 @@ const getServer = async (interaction) => {
         serverNames.push(item.serverName); 
     });
 
-    interaction.editReply(`${serverNames}`)
+    botWrite(interaction, `${serverNames}`)
+    
 };
 
 const connectSrv = async (interaction) => {
@@ -104,12 +106,23 @@ const connectSrv = async (interaction) => {
     HourLog(`TRYING CONNECT INTO SERVER ${servertarget.username}`);
 
     const conn = new ConnectSSH(serverObj)
-
     try {
         await conn.connect()
-        HourLog(`CONNECT INTO SERVER SUCCESFUL`)
-    }catch(err){ HourLog(`CONNECT HAS BEEN FAILED BECAUSE: ${err}`)}
-}
+        HourLog(`CONNECT SERVER SUCCESFUL`);
+        serverConn = true;
+    }catch(err){ HourLog(`CONNECT HAS FAILED BECAUSE: ${err}`)};
+
+    return conn
+};
+
+
+let sshConn;
+
+const verSpace = async (server, interaction) => {
+    sshConn 
+    ? botWrite(interaction,server.command('df -h') )
+    : botWrite(interaction,'Conecte em um servidor' )
+};
 
 module.exports = {
     data: ssh,
@@ -120,12 +133,13 @@ module.exports = {
         const subcommands = {
             cadastrar: () => saveServe(interaction),
             listarservers: () => getServer(interaction),
-            conectar: () => connectSrv(interaction)
+            conectar: () => connectSrv(interaction),
+            verificarespaco: verSpace(connectSrv(interaction),interaction)
         };
 
-        const subCommInput = interaction.options.getSubcommand()
+        const subCommInput = interaction.options.getSubcommand();
 
-        subCommInput in subcommands ? await subcommands[subCommInput]() : interaction.editReply('COMANDO igitado nao existe');
+        subCommInput in subcommands ? await subcommands[subCommInput]() : botWrite(interaction, 'COMANDO igitado nao existe');
 
     },
 };

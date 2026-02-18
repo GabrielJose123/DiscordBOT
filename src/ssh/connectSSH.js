@@ -2,6 +2,7 @@ const { NodeSSH } = require('node-ssh');
 const dotenv = require('dotenv');
 const { throwDeprecation } = require('node:process');
 const { error } = require('node:console');
+const HourLog = require('../utils/HourLog');
 
 dotenv.config()
 
@@ -17,8 +18,8 @@ class ConnectSSH {
             host: this.host,
             username: this.username,
             password : this.auth //mudar pra key
-        }).then(() => {console.log('SERVER CONNECTION : OK')})
-        .catch(err => {console.log(`ERROR TRYING CONNECT TO SERVER ${err}`)})
+        }).then(() => {HourLog('SERVER CONNECTION : OK')})
+        .catch(err => {HourLog(`ERROR TRYING CONNECT TO SERVER ${err}`)})
     };
     async command(command) {
             const result = await this.ssh.execCommand(command)

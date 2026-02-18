@@ -50,12 +50,12 @@ const ssh = new SlashCommandBuilder()
     )
     .addSubcommand(subcommand => 
         subcommand
-            .setName('conectar')
-            .setDescription('conectar em um dos servidores cadastrados')
+            .setName('verificarespaco')
+            .setDescription('verifica espaco em um dos servidores conectados')
                 .addStringOption(option =>
                     option
-                        .setName('servers')
-                        .setDescription("Digite um dos servidores cadastrados que deseja se conectar")
+                        .setName('server')
+                        .setDescription("Digite um dos servidor que queira verificar o espaco")
                         .setRequired(true)
                 )
     )
@@ -72,7 +72,7 @@ const saveServe = async (interaction) => {
     try {
         await ApiOp.post(serverObj);
         HourLog(`THE SERVER ${serverObj.serverName} HAS BEEN SAVED successful`);
-        
+        botWrite(interaction, `Servidor: ${serverObj.serverName} salvo com sucesso`);
     }catch (err){HourLog(`THE SERVER ${serverObj.serverName} DON´T CAN SAVED BECAUSE: ${err}`)}
 };
 
@@ -84,41 +84,35 @@ const getServer = async (interaction) => {
         serverNames.push(item.serverName); 
     });
 
-    botWrite(interaction, `${serverNames}`)
+    botWrite(interaction, `${serverNames}`);
 };
 
-const connectSrv = async (interaction) => {
+const verSpace = async (interaction) => {
     const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
     const serverData = await ApiOp.get();
+    
+    const serverReq = interaction.options.getString("server")
 
-    const servertarget = Object.values(serverData).filter(item => {
-        return item.serverName == `${interaction.options.getSubcommand()}`;
-    });
+    const serverTarget = Object.values(serverData).find(item => item.serverName === serverReq);
+
+    !serverTarget && botWrite(interaction, `Servidor ${serverReq} não encontrado.`);
 
     const serverObj = {
-        username: servertarget.username,
-        host: servertarget.ip,
-        auth: servertarget.auth
+        username: serverTarget.username,
+        host: serverTarget.ip,
+        auth: serverTarget.auth
     };
 
-    HourLog(`TRYING CONNECT INTO SERVER ${serverObj.username}`);
+    console.log(serverObj);
 
     const conn = new ConnectSSH(serverObj)
     try {
-        await conn.connect()
-        HourLog(`CONNECT SERVER SUCCESFUL`);
+        HourLog(`TRYING CONNECT INTO SERVER ${serverTarget.username}`);
         serverConn = true;
+        await conn.connect();
+        botWrite(interaction, `\`\`\`${await conn.command('df -h')}\`\`\``);
     }catch(err){ HourLog(`CONNECT HAS FAILED BECAUSE: ${err}`)};
 
-    return conn
-};
-
-let sshConn;
-
-const verSpace = async (server, interaction) => {
-    sshConn 
-    ? botWrite(interaction,server.command('df -h') )
-    : botWrite(interaction,'Conecte em um servidor' )
 };
 
 module.exports = {
@@ -130,8 +124,7 @@ module.exports = {
         const subcommands = {
             cadastrar: () => saveServe(interaction),
             listarservers: () => getServer(interaction),
-            conectar: () => connectSrv(interaction),
-            verificarespaco: () => verSpace(connectSrv(interaction),interaction)
+            verificarespaco: () => verSpace(interaction)
         };
 
         const subCommInput = interaction.options.getSubcommand();

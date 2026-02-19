@@ -60,9 +60,29 @@ const ssh = new SlashCommandBuilder()
                 )
     )
 
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('rodarcomando')
+            .setDescription('roda comando digitado')
+                .addStringOption(option =>
+                    option
+                        .setName('server')
+                        .setDescription("Digite um dos servidor que queira rodar o comando digitado")
+                        .setRequired(true)
+                )
+
+                .addStringOption(option => 
+                    option
+                        .setName('command')
+                        .setDescription("Digite um comando que queira rodar no servidor digitado")
+                        .setRequired(true)
+                )
+    )
+
 const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
 
-const saveServe = async (interaction) => {
+
+const saveSrv = async (interaction) => {
     const serverObj = {
         serverName: interaction.options.getString('servername'),
         ip: interaction.options.getString('host'),
@@ -77,15 +97,44 @@ const saveServe = async (interaction) => {
 };
 
 const getServer = async (interaction) => {
-    const serverNames = [];
     const data = await ApiOp.get();
 
-    Object.entries(data).map(([idx,item]) => {
-        serverNames.push(item.serverName); 
-    });
+    const serverNames = Object.values(data).map((item) => item.serverName);
 
-    botWrite(interaction, `${serverNames}`);
+    const msg = serverNames.join("\n");
+
+    botWrite(interaction, `📡 **Servidores:**\n\`\`\`\n${msg}\n\`\`\``);
 };
+
+const runComma= async (interaction) => {
+    const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
+    const serverData = await ApiOp.get();
+    
+    const serverReq = interaction.options.getString("server");
+    const comma = interaction.options.getString('command');
+
+    const serverTarget = Object.values(serverData).find(item => item.serverName === serverReq);
+
+    !serverTarget && botWrite(interaction, `Servidor ${serverReq} não encontrado.`);
+
+    const serverObj = {
+        username: serverTarget.username,
+        host: serverTarget.ip,
+        auth: serverTarget.auth
+    };
+
+    const conn = new ConnectSSH(serverObj);
+
+    try {
+        HourLog(`TRYING CONNECT INTO SERVER ${serverTarget.username}`);
+        await conn.connect();
+        botWrite(interaction, `\`\`\`${await conn.command(comma)}\`\`\``);
+    }catch(err){ 
+        HourLog(`CONNECT HAS FAILED BECAUSE: ${err}`);
+        botWrite(interaction, `Erro na conexao com o servidor ${serverReq}, Verifique se ele esta ligado ou com SSH habilitado`);
+    };
+};
+
 
 const verSpace = async (interaction) => {
     const ApiOp = new FetchOp({ url: `http://localhost:${process.env.PORT}/servers`});
@@ -103,15 +152,16 @@ const verSpace = async (interaction) => {
         auth: serverTarget.auth
     };
 
-    console.log(serverObj);
-
-    const conn = new ConnectSSH(serverObj)
+    const conn = new ConnectSSH(serverObj);
     try {
         HourLog(`TRYING CONNECT INTO SERVER ${serverTarget.username}`);
         serverConn = true;
         await conn.connect();
         botWrite(interaction, `\`\`\`${await conn.command('df -h')}\`\`\``);
-    }catch(err){ HourLog(`CONNECT HAS FAILED BECAUSE: ${err}`)};
+    }catch(err){ 
+        HourLog(`CONNECT HAS FAILED BECAUSE: ${err}`);
+        botWrite(interaction, `Erro na conexao com o servidor ${serverReq}, Verifique se ele esta ligado ou com SSH habilitado`);
+    };
 
 };
 
@@ -122,14 +172,15 @@ module.exports = {
         await interaction.deferReply();
 
         const subcommands = {
-            cadastrar: () => saveServe(interaction),
+            cadastrar: () => saveSrv(interaction),
             listarservers: () => getServer(interaction),
-            verificarespaco: () => verSpace(interaction)
+            verificarespaco: () => verSpace(interaction),
+            rodarcomando: () => runComma(interaction)
         };
 
         const subCommInput = interaction.options.getSubcommand();
 
-        subCommInput in subcommands ? await subcommands[subCommInput]() : botWrite(interaction, 'COMANDO igitado nao existe');
+        subCommInput in subcommands ? await subcommands[subCommInput]() : botWrite(interaction, 'comando digitado nao existe');
 
     },
 };
